@@ -36,7 +36,17 @@ export async function lintPullRequest(title: string, configPath: string) {
   let opts: any = {};
   if (existsSync(configPath)) {
     try {
-      opts = await load({}, {
+      opts = await load({
+        extends: ['@commitlint/config-conventional'],
+        rules: {
+          'references-empty': [2, 'never'],
+        },
+        parserPreset: {
+          parserOpts: {
+            issuePrefixes: ['SET-'],
+          },
+        },
+      }, {
         cwd: process.cwd()
       });
     } catch (e) {

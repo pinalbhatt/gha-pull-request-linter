@@ -4133,7 +4133,17 @@ function lintPullRequest(title, configPath) {
         let opts = {};
         if (fs_1.existsSync(configPath)) {
             try {
-                opts = yield load_1.default({}, {
+                opts = yield load_1.default({
+                    extends: ['@commitlint/config-conventional'],
+                    rules: {
+                        'references-empty': [2, 'never'],
+                    },
+                    parserPreset: {
+                        parserOpts: {
+                            issuePrefixes: ['SET-'],
+                        },
+                    },
+                }, {
                     cwd: process.cwd()
                 });
             }
