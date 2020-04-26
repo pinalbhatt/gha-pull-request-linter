@@ -4134,11 +4134,11 @@ function lintPullRequest(title, configPath) {
         if (fs_1.existsSync(configPath)) {
             try {
                 opts = yield load_1.default({}, {
-                    file: configPath,
                     cwd: process.cwd()
                 });
             }
             catch (e) {
+                console.log('error', e.message);
                 core.error(e);
                 core.setFailed(e.message);
             }

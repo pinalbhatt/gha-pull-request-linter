@@ -37,12 +37,12 @@ export async function lintPullRequest(title: string, configPath: string) {
   if (existsSync(configPath)) {
     try {
       opts = await load({}, {
-        file: configPath,
         cwd: process.cwd()
       });
     } catch (e) {
-      core.error(e)
-      core.setFailed(e.message)
+      console.log('error', e.message);
+      core.error(e);
+      core.setFailed(e.message);
     }
   }
   // const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
