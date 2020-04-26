@@ -4108,7 +4108,7 @@ function run() {
                 core.debug('Could not get pull request title from context, exiting');
                 return;
             }
-            yield lintPullRequest(title, configPath);
+            yield lintPullRequest(title);
         }
         catch (error) {
             core.error(error);
@@ -4124,13 +4124,24 @@ function getPrTitle() {
     console.log('PR Title', pullRequest.title);
     return pullRequest.title;
 }
-function lintPullRequest(title, configPath) {
+function lintPullRequest(title) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('default @commitlint/config-conventional', config_conventional_1.default);
-        console.log('configPath', configPath);
         let opts = {};
         try {
-            let opts = yield load_1.default({}, { file: configPath, cwd: process.cwd() });
+            let opts = yield load_1.default({
+                extends: ['@commitlint/config-conventional'],
+                rules: {
+                    'references-empty': [2, 'never'],
+                },
+                parserPreset: {
+                    parserOpts: {
+                        issuePrefixes: ['SET-'],
+                    },
+                },
+            }, {
+                cwd: process.cwd()
+            });
             console.log('opts', opts);
             const result = yield lint_1.default(title, opts.rules, opts.parserPreset ? { parserOpts: opts.parserPreset.parserOpts } : {});
             console.log('result', result);

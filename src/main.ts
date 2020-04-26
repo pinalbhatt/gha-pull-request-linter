@@ -13,7 +13,7 @@ async function run(): Promise<void> {
       core.debug('Could not get pull request title from context, exiting')
       return
     }
-    await lintPullRequest(title, configPath)
+    await lintPullRequest(title)
   } catch (error) {
     core.error(error)
     core.setFailed(error.message)
@@ -29,12 +29,24 @@ function getPrTitle(): string | undefined {
   return pullRequest.title
 }
 
-export async function lintPullRequest(title: string, configPath: string) {
+export async function lintPullRequest(title: string) {
   console.log('default @commitlint/config-conventional', cconfig);
-  console.log('configPath', configPath);
   let opts: any = {};
   try {
-    let opts = await load({}, { file: configPath, cwd: process.cwd() });
+    let opts = await load({
+      extends: ['@commitlint/config-conventional'],
+      rules: {
+        'references-empty': [2, 'never'],
+      },
+      parserPreset: {
+        parserOpts: {
+          issuePrefixes: ['SET-'],
+        },
+      },
+    },
+      {
+        cwd: process.cwd()
+      });
     console.log('opts', opts);
     const result = await lint(
       title,
