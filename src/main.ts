@@ -32,7 +32,8 @@ function getPrTitle(): string | undefined {
 export async function lintPullRequest(title: string, configPath: string) {
   console.log('default @commitlint/config-conventional', cconfig);
   console.log('configPath', configPath);
-  const opts = existsSync(configPath) ? await load({}, {file: configPath }) : {};
+  console.log('cwd', process.cwd());
+  const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
   console.log('commitlint options', opts);
   const result = await lint(
     title,

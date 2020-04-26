@@ -4129,7 +4129,8 @@ function lintPullRequest(title, configPath) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('default @commitlint/config-conventional', config_conventional_1.default);
         console.log('configPath', configPath);
-        const opts = fs_1.existsSync(configPath) ? yield load_1.default({}, { file: configPath }) : {};
+        console.log('cwd', process.cwd());
+        const opts = fs_1.existsSync(configPath) ? yield load_1.default({}, { file: configPath, cwd: process.cwd() }) : {};
         console.log('commitlint options', opts);
         const result = yield lint_1.default(title, opts.rules, opts.parserPreset ? { parserOpts: opts.parserPreset.parserOpts } : {});
         if (result.valid === true)
