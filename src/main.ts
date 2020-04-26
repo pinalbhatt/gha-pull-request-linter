@@ -33,7 +33,19 @@ export async function lintPullRequest(title: string, configPath: string) {
   console.log('default @commitlint/config-conventional', cconfig);
   console.log('configPath', configPath);
   console.log('cwd', process.cwd());
-  const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
+  let opts: any = {};
+  if (existsSync(configPath)) {
+    try {
+      opts = await load({}, {
+        file: configPath,
+        cwd: process.cwd()
+      });
+    } catch (e) {
+      core.error(e)
+      core.setFailed(e.message)
+    }
+  }
+  // const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
   console.log('commitlint options', opts);
   const result = await lint(
     title,
