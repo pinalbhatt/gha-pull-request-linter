@@ -32,42 +32,30 @@ function getPrTitle(): string | undefined {
 export async function lintPullRequest(title: string, configPath: string) {
   console.log('default @commitlint/config-conventional', cconfig);
   console.log('configPath', configPath);
-  console.log('cwd', process.cwd());
   let opts: any = {};
-  if (existsSync(configPath)) {
-    try {
-      opts = await load({
-        extends: ['@commitlint/config-conventional'],
-        rules: {
-          'references-empty': [2, 'never'],
-        },
-        parserPreset: {
-          parserOpts: {
-            issuePrefixes: ['SET-'],
-          },
-        },
-      }, {
-        cwd: process.cwd()
-      });
-    } catch (e) {
-      console.log('error', e.message);
-      core.error(e);
-      core.setFailed(e.message);
+  try {
+    let opts = await load({}, { file: configPath, cwd: process.cwd() });
+    console.log('opts', opts);
+    const result = await lint(
+      title,
+      opts.rules,
+      opts.parserPreset ? {parserOpts: opts.parserPreset.parserOpts} : {}
+    );
+    console.log('result', result);
+    if (result.valid === true) {
+      return;
+    } else {
+      const errorMessage = result.errors
+        .map(({message, name}: any) => `${name}:${message}`)
+        .join('\n');
+      console.error(errorMessage);
+      core.setFailed(errorMessage);
     }
+  } catch (e) {
+    console.log('in catch');
+    core.error(e);
+    core.setFailed(e.message);
   }
-  // const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
-  console.log('commitlint options', opts);
-  const result = await lint(
-    title,
-    opts.rules,
-    opts.parserPreset ? {parserOpts: opts.parserPreset.parserOpts} : {}
-  )
-  if (result.valid === true) return
-
-  const errorMessage = result.errors
-    .map(({message, name}: any) => `${name}:${message}`)
-    .join('\n')
-  throw new Error(errorMessage)
 }
 
 run()

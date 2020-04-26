@@ -4094,7 +4094,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __webpack_require__(747);
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const lint_1 = __importDefault(__webpack_require__(798));
@@ -4129,39 +4128,28 @@ function lintPullRequest(title, configPath) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('default @commitlint/config-conventional', config_conventional_1.default);
         console.log('configPath', configPath);
-        console.log('cwd', process.cwd());
         let opts = {};
-        if (fs_1.existsSync(configPath)) {
-            try {
-                opts = yield load_1.default({
-                    extends: ['@commitlint/config-conventional'],
-                    rules: {
-                        'references-empty': [2, 'never'],
-                    },
-                    parserPreset: {
-                        parserOpts: {
-                            issuePrefixes: ['SET-'],
-                        },
-                    },
-                }, {
-                    cwd: process.cwd()
-                });
+        try {
+            let opts = yield load_1.default({}, { file: configPath, cwd: process.cwd() });
+            console.log('opts', opts);
+            const result = yield lint_1.default(title, opts.rules, opts.parserPreset ? { parserOpts: opts.parserPreset.parserOpts } : {});
+            console.log('result', result);
+            if (result.valid === true) {
+                return;
             }
-            catch (e) {
-                console.log('error', e.message);
-                core.error(e);
-                core.setFailed(e.message);
+            else {
+                const errorMessage = result.errors
+                    .map(({ message, name }) => `${name}:${message}`)
+                    .join('\n');
+                console.error(errorMessage);
+                core.setFailed(errorMessage);
             }
         }
-        // const opts = existsSync(configPath) ? await load({}, {file: configPath, cwd: process.cwd() }) : {};
-        console.log('commitlint options', opts);
-        const result = yield lint_1.default(title, opts.rules, opts.parserPreset ? { parserOpts: opts.parserPreset.parserOpts } : {});
-        if (result.valid === true)
-            return;
-        const errorMessage = result.errors
-            .map(({ message, name }) => `${name}:${message}`)
-            .join('\n');
-        throw new Error(errorMessage);
+        catch (e) {
+            console.log('in catch');
+            core.error(e);
+            core.setFailed(e.message);
+        }
     });
 }
 exports.lintPullRequest = lintPullRequest;
