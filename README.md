@@ -27,5 +27,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: JulienKode/pull-request-name-linter-action@v0.1.0
+    - uses: pinalbhatt/gha-pull-request-linter@v1
 ```
