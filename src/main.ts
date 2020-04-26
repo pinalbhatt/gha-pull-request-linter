@@ -1,3 +1,4 @@
+import { existsSync } from 'fs';
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import lint from '@commitlint/lint'
@@ -30,7 +31,8 @@ function getPrTitle(): string | undefined {
 
 export async function lintPullRequest(title: string, configPath: string) {
   console.log('default @commitlint/config-conventional', cconfig);
-  const opts = await load({}, {file: configPath, cwd: process.cwd()})
+  console.log('configPath', configPath);
+  const opts = existsSync(configPath) ? await load({}, {file: configPath }) : {};
   console.log('commitlint options', opts);
   const result = await lint(
     title,

@@ -4094,6 +4094,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(747);
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const lint_1 = __importDefault(__webpack_require__(798));
@@ -4127,7 +4128,8 @@ function getPrTitle() {
 function lintPullRequest(title, configPath) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('default @commitlint/config-conventional', config_conventional_1.default);
-        const opts = yield load_1.default({}, { file: configPath, cwd: process.cwd() });
+        console.log('configPath', configPath);
+        const opts = fs_1.existsSync(configPath) ? yield load_1.default({}, { file: configPath }) : {};
         console.log('commitlint options', opts);
         const result = yield lint_1.default(title, opts.rules, opts.parserPreset ? { parserOpts: opts.parserPreset.parserOpts } : {});
         if (result.valid === true)
