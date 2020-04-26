@@ -30,28 +30,33 @@ function getPrTitle(): string | undefined {
 }
 
 export async function lintPullRequest(title: string) {
+  console.log('title', title);
   console.log('default @commitlint/config-conventional', cconfig);
   let opts: any = {};
   try {
-    let opts = await load({
-      extends: ['@commitlint/config-conventional'],
-      rules: {
-        'references-empty': [2, 'never'],
-      },
-      parserPreset: {
-        parserOpts: {
-          issuePrefixes: ['SET-'],
-        },
-      },
-    },
-      {
-        cwd: process.cwd()
-      });
-    console.log('opts', opts);
+    // let opts = await load({
+    //   extends: ['@commitlint/config-conventional'],
+    //   rules: {
+    //     'references-empty': [2, 'never'],
+    //   },
+    //   parserPreset: {
+    //     parserOpts: {
+    //       issuePrefixes: ['SET-'],
+    //     },
+    //   },
+    // },
+    //   {
+    //     cwd: process.cwd()
+    //   });
+    // console.log('opts', opts);
     const result = await lint(
       title,
-      opts.rules,
-      opts.parserPreset ? {parserOpts: opts.parserPreset.parserOpts} : {}
+      {
+        'references-empty': [2, 'never'],
+      },
+      {
+        issuePrefixes: ['SET-'],
+      }
     );
     console.log('result', result);
     if (result.valid === true) {
